@@ -16,8 +16,9 @@ class Scena {
     Dron TabDronow[2];
     PzG::LaczeDoGNUPlota Lacze;
     public:
-    const Dron& WezAktywnegoDrona()const;
-    Dron& UzyjAktynegoDrona();
+    Dron& WezAktywnegoDrona(int i);
+    bool UzyjAktynegoDrona(int i);
+    void UstawLacze(PzG::LaczeDoGNUPlota& Lacze);
 
 
 };

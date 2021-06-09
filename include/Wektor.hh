@@ -151,6 +151,7 @@ std::ostream& operator << (std::ostream &Strm, const Wektor<Wymiar> &Wek)
   while(i!=Wymiar)
   {
     Strm << Wek[i];
+    Strm << " ";
     i=i+1;
   }
   return Strm;  

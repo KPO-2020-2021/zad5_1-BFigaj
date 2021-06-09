@@ -1,7 +1,7 @@
 #include "doctest.h"
 #include "Wektor3D.hh"
 #include "Macierz3x3.hh"
-
+/*
 TEST_CASE("Konstruktor bezparametryczny") {
     Wektor3D vec;
     CHECK(vec[0] == 0);
@@ -41,4 +41,4 @@ TEST_CASE("Operator* macierzy przez wektor z lewej") {
    CHECK(newvec[0] == 12);
    CHECK(newvec[1] == 12);
    CHECK(newvec[2] == 12);
-}
+}*/

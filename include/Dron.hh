@@ -23,18 +23,24 @@ class Dron {
     double KatOrientacji_stopnie;
     Prostopadloscian KorpusDrona;
     Graniastoslup6 RotorDrona[4];
+    int i;
     public:
+    void KtoryDron(int i);
+    bool TworzKorpus(Wektor3D trans);
+    bool TworzRotor(int j,Wektor3D trans);
+    bool TworzDrona();
     void PlanujPoczatkowaSciezke(double KatSkretu_stopnie,
                                 double DlugoscLotu,
-                                std::vector<Wektor3D>& PunktySciezki);
+                                Wektor3D Przemieszczenie,
+                                PzG::LaczeDoGNUPlota& Lacze);
     bool WykonajPionowyLot(double DlugoscLotu,PzG::LaczeDoGNUPlota& Lacze);
-    bool WykonajPoziomyLot(double DlugoscLotu,PzG::LaczeDoGNUPlota& Lacze);
-    bool const Oblicz_i_Zapisz_WspGlbDrona();
+    bool WykonajPoziomyLot(double DlugoscLotu,Wektor3D Przemieszczenie,PzG::LaczeDoGNUPlota& Lacze);
+    bool /*const*/ Oblicz_i_Zapisz_WspGlbDrona();
     protected:
     Wektor3D TransfDoUklWspRodzica(const Wektor3D& Wierz)const;
     private:
-    bool const Oblicz_i_Zapisz_WspGlbKorpusu();
-    bool const Oblicz_i_Zapisz_WspGlbRotora(const Graniastoslup6& Rotor);
+    bool /*const*/ Oblicz_i_Zapisz_WspGlbKorpusu();
+    bool Oblicz_i_Zapisz_WspGlbRotora(const Graniastoslup6& Rotor,int i);
 
 
 };

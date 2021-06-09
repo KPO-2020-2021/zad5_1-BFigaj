@@ -2,7 +2,7 @@
 #include "doctest.h"
 #include "Macierz3x3.hh"
 #include <math.h>
-
+/*
 TEST_CASE("Konstruktor bezparametryczny ") {
     Macierz3x3 mtx;
     CHECK(mtx(0,0) == 0);
@@ -115,4 +115,4 @@ TEST_CASE("Operator() z i bez const") {
     CHECK(mtx(0,1) == 3 );
     CHECK(mtx(1,0) == 2 );
     CHECK(mtx(1,1) == 1 );
-}
+}*/

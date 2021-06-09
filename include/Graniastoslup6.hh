@@ -5,9 +5,6 @@
 #include <iostream>
 #include "BrylaGeometryczna.hh"
 
-#define R 30
-#define A 20
-#define H 20
 /*!
  *  \file 
  *  \brief Ten plik zawiera diefinicje klasy Prostopadłościan
@@ -17,12 +14,13 @@
  *  dodatkowo przetrzymywana jest Macierz3x3 do operacji takich jak
  *  rotacja
  */
-class Graniastoslup6:public BrylaGeometryczna {
+class Graniastoslup6:public BrylaGeometryczna{
   Wektor3D Polozenie;
   double KatOrientacji_stopnie;
   
   public:
   Wektor3D TransfDoUklWspRodzica(const Wektor3D& Wierz)const;
+  Wektor3D& polozenie(int index,const Wektor3D polozenieD);
 };
 
 

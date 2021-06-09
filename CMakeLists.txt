@@ -38,7 +38,7 @@ find_lto(CXX)
 #                         Locate files (change as needed).
 # --------------------------------------------------------------------------------
 set(SOURCES          # All .cpp files in src/
-    src/lacze_do_gnuplota.cpp src/Macierz3x3.cpp src/Prostopadloscian.cpp src/Wektor3D.cpp
+    src/lacze_do_gnuplota.cpp src/Macierz3x3.cpp src/Prostopadloscian.cpp src/Wektor3D.cpp src/BrylaGeometryczna.cpp src/Scena.cpp src/Graniastoslup6.cpp src/Dron.cpp
 )
 set(TESTFILES        # All .cpp files in tests/
     tests/main.cpp
