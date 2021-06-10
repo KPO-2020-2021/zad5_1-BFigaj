@@ -17,6 +17,19 @@ using namespace std;
  *  Tworzy Prostopadłoscian w zależności od długości boków
  *  i gdzie pierwszy punkt leży na środku układu współrzędnych
  */
+/*
+Prostopadloscian::Prostopadloscian(Wektor3D polozenieD)
+{
+    Wektor3D skala;
+    skala[0]=10;
+    skala[1]=8;
+    skala[2]=4;
+    Polozenie=polozenieD;
+    Polozenie[2]+=2;
+    StworzSkale(skala);
+    KatOrientacji_stopnie=0;
+
+}*/
 Wektor3D Prostopadloscian::TransfDoUklWspRodzica(const Wektor3D& Wierz)const
 {
     Wektor3D Nowe_polozenie;

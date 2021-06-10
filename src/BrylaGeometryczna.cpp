@@ -38,9 +38,10 @@ Wektor3D BrylaGeometryczna::Skaluj(const Wektor3D& Wierz)const
     return Nowy_Wierz;
 }
 
-double& BrylaGeometryczna::StworzSkale(unsigned int i)
+Wektor3D& BrylaGeometryczna::StworzSkale(Wektor3D skala)
 {
-    return Skala[i];
+    Skala=skala;
+    return Skala;
 }
 
 const std::string& BrylaGeometryczna::WezNazwePliku_BrylaWzorcowa()const

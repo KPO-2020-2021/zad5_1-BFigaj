@@ -20,6 +20,7 @@ class Prostopadloscian:public BrylaGeometryczna{
   Wektor3D Polozenie;
   double KatOrientacji_stopnie;
   public:
+  //Prostopadloscian(Wektor3D polozenieD);
   Wektor3D TransfDoUklWspRodzica(const Wektor3D& Wierz)const;
   Wektor3D& polozenie(const Wektor3D polozenieD);
 };

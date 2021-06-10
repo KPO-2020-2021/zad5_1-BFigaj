@@ -43,7 +43,7 @@ bool Scena::UzyjAktynegoDrona(int i)
         AktywnyDron.WykonajPionowyLot(dlugosclotu,Lacze);
         AktywnyDron.WykonajPoziomyLot(dlugosclotu,przemieszczenie,Lacze);
         AktywnyDron.WykonajPionowyLot(dlugosclotu,Lacze);
-        
+        Lacze.Rysuj();
         cout << "Jezeli nie chcesz kontynuowac wpisz N";
         cin >> wybor;
     }

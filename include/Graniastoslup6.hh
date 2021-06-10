@@ -19,8 +19,11 @@ class Graniastoslup6:public BrylaGeometryczna{
   double KatOrientacji_stopnie;
   
   public:
+  //Graniastoslup6(unsigned int ktory,Wektor3D polozenieD);
   Wektor3D TransfDoUklWspRodzica(const Wektor3D& Wierz)const;
   Wektor3D& polozenie(int index,const Wektor3D polozenieD);
+  double& kat(double kat);
+  double kat()const;
 };
 
 

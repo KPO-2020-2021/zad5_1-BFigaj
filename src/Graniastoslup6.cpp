@@ -36,3 +36,18 @@ Wektor3D& Graniastoslup6::polozenie(int index,const Wektor3D polozenieD)
         Polozenie=polozenieD+transR4;
     return Polozenie;
 }
+
+
+double& Graniastoslup6::kat(double kat)
+{
+    if (kat>0)
+        KatOrientacji_stopnie+=kat;
+    else
+        KatOrientacji_stopnie-=kat;
+    return KatOrientacji_stopnie;
+}
+
+double Graniastoslup6::kat()const
+{
+    return KatOrientacji_stopnie;
+}

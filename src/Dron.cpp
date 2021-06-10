@@ -1,7 +1,7 @@
 
 #include <iostream>
 #include <fstream>
-
+#include <math.h>
 #include "Dron.hh"
 
 #define PLIK_TRASY_PRZELOTU "dat/trasa_przelotu.dat"
@@ -27,6 +27,8 @@ void Dron::KtoryDron(int i)
     Polozenie[0]=20;
     Polozenie[1]=20;
     Polozenie[2]=0;
+   // KorpusDrona=Prostopadloscian(Polozenie);
+
   }
   if(i==1)
   {
@@ -186,18 +188,25 @@ bool Dron::WykonajPionowyLot(double DlugoscLotu,PzG::LaczeDoGNUPlota& Lacze)
       Lacze.Rysuj();
 
     }
+    if (!TworzDrona()) return false;
+    usleep(100000); // 0.1 ms
+    Lacze.Rysuj();
     return true;
   }
   else if(Polozenie[2]==DlugoscLotu)
   {
     cout << endl << "Ladowanie ... " << endl;
-    for (; Polozenie[2] >= 0; Polozenie[2] -= 2)
+    for (; Polozenie[2] > 0; Polozenie[2] -= 2)
     {
       if (!TworzDrona()) return false;
       usleep(100000); // 0.1 ms
       Lacze.Rysuj();
-
+      cout << Polozenie[2] <<"==?" << DlugoscLotu << endl;
     }
+    if (!TworzDrona()) return false;
+    usleep(100000); // 0.1 ms
+    Lacze.Rysuj();
+    cout << Polozenie[2] <<"==?" << DlugoscLotu << endl;
     return true;
   }
   return false;
@@ -205,21 +214,34 @@ bool Dron::WykonajPionowyLot(double DlugoscLotu,PzG::LaczeDoGNUPlota& Lacze)
 
 bool Dron::WykonajPoziomyLot(double DlugoscLotu,Wektor3D Przemieszczenie,PzG::LaczeDoGNUPlota& Lacze)
 {
+  double j=0,KatSzukany;
   cout << Polozenie[2] <<"==?" << DlugoscLotu << endl;
+  KatSzukany=atan((Polozenie[1]/Polozenie[0]));
+  for (;KatOrientacji_stopnie<((180*KatSzukany)/(M_PI));KatOrientacji_stopnie+=(((180*KatSzukany)/(M_PI))/20))
+  {
+    cout << KatSzukany << "katO"<< KatOrientacji_stopnie << endl;
+    if (!TworzDrona()) return false;
+    usleep(100000); // 0.1 ms
+    Lacze.Rysuj();
+  }
+  cout << Polozenie[2] <<"==?" << DlugoscLotu << endl;
+  
   if(Polozenie[2]==DlugoscLotu)
   {
     cout << endl << "Lot do miejsca docelowego ... " << endl;
     for (double i=0;i<=Przemieszczenie[0];i=i+(Przemieszczenie[0]/10))
     {
-      for (double i=0;i<=Przemieszczenie[1];i=i+(Przemieszczenie[1]/10))
-      {
-        Polozenie[0]=Polozenie[0]+(Przemieszczenie[0]/10);
-        Polozenie[1]=Polozenie[1]+(Przemieszczenie[1]/10);
-        if (!TworzDrona()) return false;
-        usleep(100000); // 0.1 ms
-        Lacze.Rysuj();
-      }
+      j=j+(Przemieszczenie[1]/10);
+      Polozenie[0]=Polozenie[0]+(Przemieszczenie[0]/10);
+      Polozenie[1]=Polozenie[1]+(Przemieszczenie[1]/10);
+      if (!TworzDrona()) return false;
+      usleep(100000); // 0.1 ms
+      Lacze.Rysuj();
+      
     }
+    if (!TworzDrona()) return false;
+    usleep(100000); // 0.1 ms
+    Lacze.Rysuj();
     return true;
   }
   cerr << "Nie poprawna wysokosc lotu" << endl;
@@ -235,6 +257,10 @@ Wektor3D Dron::TransfDoUklWspRodzica(const Wektor3D& Wierz)const
     return Nowe_polozenie;
 }
 
+
+
+
+/************************************************************************************************/
 bool Dron::TworzKorpus(Wektor3D trans)
 {
 #define  SKALA_KORPUSU  10,8,4
@@ -341,6 +367,7 @@ bool Dron::TworzRotor(int j,Wektor3D trans)
 bool Dron::TworzDrona()
 {
   Wektor3D transKor,transR1,transR2,transR3,transR4;
+  
   transKor[2]=2;
   transR1[0]=5;
   transR1[1]=4;
@@ -354,7 +381,17 @@ bool Dron::TworzDrona()
   transR4[0]=-5;
   transR4[1]=-4;
   transR4[2]=5;
-
+  for(unsigned index=0;index<4;++index)
+  {
+    if(i%2==0)
+    {
+      RotorDrona[index].kat(10);
+    }
+    else
+    {
+      RotorDrona[index].kat(-10);
+    }
+  }
   if (!TworzKorpus(transKor)) return false;
 
   if (!TworzRotor(0,transR1)) return false;

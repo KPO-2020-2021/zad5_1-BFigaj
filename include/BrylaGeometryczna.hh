@@ -16,7 +16,7 @@ class BrylaGeometryczna {
   std::string NazwaPliku_BrylaFinalna;
   Wektor3D Skala;
   public:
-  double& StworzSkale(unsigned int i);
+  Wektor3D& StworzSkale(Wektor3D skala);
   Wektor3D Skaluj(const Wektor3D& Wierz)const;
   const std::string& WezNazwePliku_BrylaWzorcowa()const;
   const std::string& WezNazwePliku_BrylaFinalna()const;
