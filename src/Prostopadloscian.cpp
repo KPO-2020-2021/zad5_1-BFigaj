@@ -7,42 +7,34 @@ using namespace std;
 
 /*!
  *  \file
- *  \brief W tym pliku zdefiniowane sa funkcje i metody związane z klasą prostopadłościan
+ *  \brief W tym pliku zdefiniowane sa funkcje i metody związane z klasa Prostopadloscian
  */
 
 
 /*!
- *  \brief Konstruktor bezparametryczny prostopadłoscianu
+ * \brief Funkcja transformujaca wspolrzedne do ukladu rodzica
  * 
- *  Tworzy Prostopadłoscian w zależności od długości boków
- *  i gdzie pierwszy punkt leży na środku układu współrzędnych
+ *  Funkcja transformuje wspolrzedne wierzcholkow do ukladu rodzica
+ *  \param[in] Wierz wektor3D ktory chcemy transformowac
+ *  \param[out] Nowy_polozenie wektor3D przetranformowany
  */
-/*
-Prostopadloscian::Prostopadloscian(Wektor3D polozenieD)
-{
-    Wektor3D skala;
-    skala[0]=10;
-    skala[1]=8;
-    skala[2]=4;
-    Polozenie=polozenieD;
-    Polozenie[2]+=2;
-    StworzSkale(skala);
-    KatOrientacji_stopnie=0;
-
-}*/
 Wektor3D Prostopadloscian::TransfDoUklWspRodzica(const Wektor3D& Wierz)const
 {
     Wektor3D Nowe_polozenie;
     Macierz3x3 mtx;
-    rotmtxz(KatOrientacji_stopnie,mtx);
+    mtx=rotmtxz(KatOrientacji_stopnie,mtx);
     Nowe_polozenie=(Wierz*mtx)+Polozenie;
     return Nowe_polozenie;
 }
-
+/*!
+ * \brief Funkcja ustawiajaca polozenie Prostopadloscianu
+ * 
+ *  Funkcja ustawia zmienna Polozenie.
+ *  \param[in] polozenieD const wektor3D ktory chcemy ustawic jako polozenie
+ *  \param[out] Polozenie wektor3D zamieniony z wejsciowego wektora3D
+ */
 Wektor3D& Prostopadloscian::polozenie(const Wektor3D polozenieD)
 {
-    Wektor3D trans;
-    trans[2]=2;
-    Polozenie=polozenieD+trans;
+    Polozenie=polozenieD;
     return Polozenie;
 }

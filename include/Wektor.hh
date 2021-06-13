@@ -18,20 +18,31 @@
  */
 template <int Wymiar>
 class Wektor {
-   double _Wsp[Wymiar]; 
+   double _Wsp[Wymiar];
+   //static size_t count; 
   public:
    Wektor()
    {
     int i;
     for(i=0;i<Wymiar;++i)
       _Wsp[i]=0;
+    //++count;
    }
    Wektor(double x)
    {
     int i;
     for(i=0;i<Wymiar;++i)
       _Wsp[i]=x;
+    //++count;
    }
+   /*Wektor(const Wektor&)
+   {
+    ++count;
+   }
+   ~Wektor()
+   {
+    --count;
+   }*/
    double operator [](unsigned int index) const
    {
     if(index>=Wymiar)
@@ -54,12 +65,48 @@ class Wektor {
     else
       return _Wsp[index];
    }
+   /*static size_t howmanyvec()
+   {
+     return count;
+   }*/
+  // void swap(Wektor & vec);
+  // Wektor& operator=(Wektor vec);
    Wektor operator+ (Wektor vec) const;
    Wektor operator- (Wektor vec) const;
    Wektor operator* (Wektor vec) const;
    bool operator== (Wektor vec) const;   
 };
+/*
+template <int Wymiar>
+size_t Wektor<Wymiar>::count = 0;
+template <int Wymiar>
+void Wektor<Wymiar>::swap(Wektor<Wymiar> & vec)
+{
+  {
+        // swap all the members (and base subobject, if applicable) with other
+        using std::swap; // because of ADL the compiler will use 
+        // custom swap for members if it exists
+        // falling back to std::swap
+        for(unsigned int i=0;i<Wymiar;++i)
+        {
+          swap(_Wsp[i], vec._Wsp[i]);
+        }
+        swap(count, vec.count);
+    }
+}
 
+template <int Wymiar>
+Wektor<Wymiar>& Wektor<Wymiar>::operator=(Wektor<Wymiar> vec)
+{
+        // swap this with other
+    swap(vec);
+
+        // by convention, always return *this
+    return *this;
+
+        // other is destroyed, releasing the memory
+}
+*/
 template <int Wymiar>
 Wektor<Wymiar> Wektor<Wymiar>::operator+ (Wektor<Wymiar> vec) const
 {

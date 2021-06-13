@@ -1,52 +1,59 @@
 #include "Graniastoslup6.hh"
 
+/*!
+ *  \file
+ *  \brief W tym pliku zdefiniowane sa funkcje i metody związane z klasa Graniastoslup6
+ */
 
-
+/*!
+ * \brief Funkcja transformujaca wspolrzedne do ukladu rodzica
+ * 
+ *  Funkcja transformuje wspolrzedne wierzcholkow do ukladu rodzica
+ *  \param[in] Wierz wektor3D ktory chcemy transformowac
+ *  \param[out] Nowy_polozenie wektor3D przetranformowany
+ */
 Wektor3D Graniastoslup6::TransfDoUklWspRodzica(const Wektor3D& Wierz)const
 {
     Wektor3D Nowe_polozenie;
     Macierz3x3 mtx;
-    rotmtxz(KatOrientacji_stopnie,mtx);
+    mtx=rotmtxz(KatOrientacji_stopnie,mtx);
     Nowe_polozenie=(Wierz*mtx)+Polozenie;
     return Nowe_polozenie;
 }
-
-Wektor3D& Graniastoslup6::polozenie(int index,const Wektor3D polozenieD)
+/*!
+ * \brief Funkcja ustawiajaca polozenie Graniastoslupa6
+ * 
+ *  Funkcja ustawia zmienna Polozenie.
+ *  \param[in] polozenieD const wektor3D ktory chcemy ustawic jako polozenie
+ *  \param[out] Polozenie wektor3D zamieniony z wejsciowego wektora3D
+ */
+Wektor3D& Graniastoslup6::polozenie(const Wektor3D polozenieD)
 {
-    Wektor3D transR1,transR2,transR3,transR4;
-    transR1[0]=5;
-    transR1[1]=4;
-    transR1[2]=5;
-    transR2[0]=5;
-    transR2[1]=-4;
-    transR2[2]=5;
-    transR3[0]=-5;
-    transR3[1]=4;
-    transR3[2]=5;
-    transR4[0]=-5;
-    transR4[1]=-4;
-    transR4[2]=5;
-    if(index==0)
-        Polozenie=polozenieD+transR1;
-    if(index==1)
-        Polozenie=polozenieD+transR2;
-    if(index==2)
-        Polozenie=polozenieD+transR3;
-    if(index==3)
-        Polozenie=polozenieD+transR4;
+    Polozenie=polozenieD;
     return Polozenie;
 }
 
-
+/*!
+ * \brief Funkcja zmieniajaca kat 
+ * 
+ *  Funkcja zmienia kat orientacji. Funkcja dziala do krecenia sie rotorow.
+ *  \param[in] kat double ktory chcemy dodac do poprzedniego konta orientacji
+ *  \param[out] KatOrientacji_stopnie double zamieniony 
+ */
 double& Graniastoslup6::kat(double kat)
 {
     if (kat>0)
         KatOrientacji_stopnie+=kat;
     else
-        KatOrientacji_stopnie-=kat;
+        KatOrientacji_stopnie+=kat;
     return KatOrientacji_stopnie;
 }
-
+/*!
+ * \brief Funkcja osylajaca kat 
+ * 
+ *  Funkcja osyla kat
+ *  \param[out] KatOrientacji_stopnie double kat orientacji
+ */
 double Graniastoslup6::kat()const
 {
     return KatOrientacji_stopnie;

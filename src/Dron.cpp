@@ -5,20 +5,20 @@
 #include "Dron.hh"
 
 #define PLIK_TRASY_PRZELOTU "dat/trasa_przelotu.dat"
-#define PLIK_ROBOCZY__DRON1_KORPUS  "dat/PlikRoboczy_Dron1_Korpus.dat"
-#define PLIK_ROBOCZY__DRON1_ROTOR1  "dat/PlikRoboczy_Dron1_Rotor1.dat"
-#define PLIK_ROBOCZY__DRON1_ROTOR2  "dat/PlikRoboczy_Dron1_Rotor2.dat"
-#define PLIK_ROBOCZY__DRON1_ROTOR3  "dat/PlikRoboczy_Dron1_Rotor3.dat"
-#define PLIK_ROBOCZY__DRON1_ROTOR4  "dat/PlikRoboczy_Dron1_Rotor4.dat"
 
-
-#define PLIK_WLASCIWY__DRON1_KORPUS  "dat/PlikWlasciwy_Dron1_Korpus.dat"
-#define PLIK_WLASCIWY__DRON1_ROTOR1  "dat/PlikWlasciwy_Dron1_Rotor1.dat"
-#define PLIK_WLASCIWY__DRON1_ROTOR2  "dat/PlikWlasciwy_Dron1_Rotor2.dat"
-#define PLIK_WLASCIWY__DRON1_ROTOR3  "dat/PlikWlasciwy_Dron1_Rotor3.dat"
-#define PLIK_WLASCIWY__DRON1_ROTOR4  "dat/PlikWlasciwy_Dron1_Rotor4.dat"
 using namespace std;
+/*!
+ *  \file
+ *  \brief W tym pliku zdefiniowane sa funkcje i metody związane z klasa Dron
+ */
 
+/*!
+ * \brief Funkcja okreslajaca ktory to dron
+ * 
+ *  Funkcja przypisuje parametry poczatkowe w zaleznosci
+ *  ktory to dron.
+ *  \param[in] i zmienna int jako index okreslajacy drona
+ */
 void Dron::KtoryDron(int i)
 {
   this->i=i;
@@ -27,8 +27,6 @@ void Dron::KtoryDron(int i)
     Polozenie[0]=20;
     Polozenie[1]=20;
     Polozenie[2]=0;
-   // KorpusDrona=Prostopadloscian(Polozenie);
-
   }
   if(i==1)
   {
@@ -37,13 +35,24 @@ void Dron::KtoryDron(int i)
     Polozenie[2]=0;
   }
 }
-
+/*!
+ * \brief Funkcja planujaca poczatkowa sciezke drona
+ * 
+ *  Funkcja wyrysowuje droge jaka dron ma przebyc
+ *  \param[in] KatSkretu_stopnie double kat
+ *  \param[in] DlugoscLotu double jako wysokosc lotu drona
+ *  \param[in] Przemieszczenie wektor3D okreslajacy gdzie mamy przemiescic drona
+ *  wpisywany przez uzytkownika
+ *  \param[in] kontener szablon vectora z biblioteki std
+ *  \param[in] Lacze referencja PzG::LaczeDoGNUPlota 
+ */
 void Dron::PlanujPoczatkowaSciezke(double KatSkretu_stopnie,
                               double DlugoscLotu,
                               Wektor3D Przemieszczenie,
+                              std::vector<Wektor3D> kontener,
                               PzG::LaczeDoGNUPlota& Lacze)
 {
-  Wektor3D prawdziwepolozenie;
+  Wektor3D wierz_trasy;
   ofstream StrmWy(PLIK_TRASY_PRZELOTU);
 
   if (!StrmWy.is_open()) {
@@ -51,23 +60,42 @@ void Dron::PlanujPoczatkowaSciezke(double KatSkretu_stopnie,
 	 << " Nie mozna otworzyc do zapisu pliku: " << PLIK_TRASY_PRZELOTU << endl
 	 << endl;
   }
-  prawdziwepolozenie=Polozenie;
+
+  kontener.reserve(4);
+  wierz_trasy=Polozenie;
+  kontener.push_back(wierz_trasy);
+  wierz_trasy[2]+=DlugoscLotu;
+  kontener.push_back(wierz_trasy);
+  wierz_trasy=wierz_trasy+Przemieszczenie;
+  kontener.push_back(wierz_trasy);
+  wierz_trasy[2]-=DlugoscLotu;
+  kontener.push_back(wierz_trasy);
   if(Przemieszczenie[2]==0)
   {
-    StrmWy << prawdziwepolozenie[0] << " " << prawdziwepolozenie[1]<< " " << prawdziwepolozenie[2] << " " << endl
-    << prawdziwepolozenie[0] << " " << prawdziwepolozenie[1]<< " " << prawdziwepolozenie[2]+DlugoscLotu << " " << endl;
-    prawdziwepolozenie=prawdziwepolozenie+Przemieszczenie;
-    StrmWy << prawdziwepolozenie[0] << " " << prawdziwepolozenie[1]<< " " << prawdziwepolozenie[2]+DlugoscLotu << " " << endl
-    << prawdziwepolozenie[0] << " " << prawdziwepolozenie[1]<< " " << prawdziwepolozenie[2] << " " << endl;
+    StrmWy << kontener[0] << endl
+    << kontener[1] << endl;
+    StrmWy << kontener[2] << endl
+    << kontener[3] << endl;
     Lacze.DodajNazwePliku(PLIK_TRASY_PRZELOTU);
   }
   KatOrientacji_stopnie=KatSkretu_stopnie;
+  for(unsigned int index;index<4;++index)
+  {
+    kontener.pop_back();
+  }
   
 }
-
-bool /*const*/ Dron::Oblicz_i_Zapisz_WspGlbDrona()
+/*!
+ * \brief Funkcja obliczajaca wspolrzedne globalne drona
+ * 
+ *  Funkcja oblicza wspolrzedne globalne drona. Wykorzystujac funkcje
+ *  olbiczania wspolrzedne globalnych korpusu i obliczania wspolrzedne globalne rotorow.
+ *  \param[out] true jesli zarowno zostana poprawnie obliczone wsp. korpusu
+ *  jak i rotorow
+ *  \param[out] false jezeli wystapi jakikolwiek blad
+ */
+bool Dron::Oblicz_i_Zapisz_WspGlbDrona()
 {
-  KorpusDrona.polozenie(Polozenie);
   if(!Oblicz_i_Zapisz_WspGlbKorpusu())
   {
     cerr << ":(  Operacja obliczania i zapisywania wspolrzednych globalnych korpusu nie powiodla sie." << endl;
@@ -75,7 +103,6 @@ bool /*const*/ Dron::Oblicz_i_Zapisz_WspGlbDrona()
   }
   for(unsigned int j=0;j<4;++j)
   {
-    RotorDrona[j].polozenie(j,Polozenie);
     if(!Oblicz_i_Zapisz_WspGlbRotora(RotorDrona[j],j))
     {
       cerr << ":(  Operacja obliczania i zapisywania wspolrzednych globalnych rotora nie powiodla sie." << endl;
@@ -84,18 +111,30 @@ bool /*const*/ Dron::Oblicz_i_Zapisz_WspGlbDrona()
   }
   return true;
 }
-
-bool /*const*/ Dron::Oblicz_i_Zapisz_WspGlbKorpusu()
+/*!
+ * \brief Funkcja obliczajaca wspolrzedne globalne korpusu
+ * 
+ *  Funkcja oblicza wspolrzedne globalne korpusu.
+ *  \param[out] true jesli zostana poprawnie otwarte pliki
+ *  \param[out] false jezeli wystapi jakikolwiek blad z otwarciem pliku
+ */
+bool Dron::Oblicz_i_Zapisz_WspGlbKorpusu()
 {
-  Wektor3D vec;
+  Wektor3D vec,skala,trans;
   ofstream  Strumien_plikowy_wy;
   ifstream Strumien_plikowy_wej;
   int LicznikWierzcholkow;
-  KorpusDrona.StworzSkale(0)=10;
-  KorpusDrona.StworzSkale(1)=8;
-  KorpusDrona.StworzSkale(2)=4;
+  skala[0]=10;
+  skala[1]=8;
+  skala[2]=4;
+  trans[0]=0;
+  trans[1]=0;
+  trans[2]=2;
+  KorpusDrona.StworzSkale(skala);
+  KorpusDrona.polozenie(trans);
   KorpusDrona.NazwaplikuW(i,0);
   KorpusDrona.NazwaplikuF(i,0);
+  /*KorpusDrona.WezNazwePliku_BrylaWzorcowa()*/
   Strumien_plikowy_wej.open(KorpusDrona.WezNazwePliku_BrylaWzorcowa());
   if (!Strumien_plikowy_wej.is_open())  {
     cerr << ":(  Operacja otwarcia do wczytania korupusu \"" << KorpusDrona.WezNazwePliku_BrylaWzorcowa() 
@@ -108,19 +147,22 @@ bool /*const*/ Dron::Oblicz_i_Zapisz_WspGlbKorpusu()
     << "\"" << endl << ":(  nie powiodla sie." << endl;
     return false;
   }
+  Strumien_plikowy_wej >> vec;
   while (!Strumien_plikowy_wej.fail()) 
   {
     LicznikWierzcholkow=0;
     for(;LicznikWierzcholkow<4;++LicznikWierzcholkow)
     {
-      Strumien_plikowy_wej >> vec;
-      KorpusDrona.Skaluj(vec);
-      cout <<"po skalowaniu korp"<< vec << endl;
-      KorpusDrona.TransfDoUklWspRodzica(vec);
-      cout <<"po rot.trans korp"<< vec << endl;
+      
+      //std::cout << vec << endl;
+      vec=KorpusDrona.Skaluj(vec);
+      //std::cout <<"po skalowaniu korp"<< vec << endl;
+      vec=KorpusDrona.TransfDoUklWspRodzica(vec);
+      //std::cout <<"po rot.trans korp"<< vec << endl;
       vec=TransfDoUklWspRodzica(vec);
-      cout <<"po trans korp"<< vec << endl;
+      //std::cout <<"po trans korp"<< vec << endl;
       Strumien_plikowy_wy << vec << endl;
+      Strumien_plikowy_wej >> vec;
     }
     Strumien_plikowy_wy << endl;
   }
@@ -128,16 +170,48 @@ bool /*const*/ Dron::Oblicz_i_Zapisz_WspGlbKorpusu()
   Strumien_plikowy_wy.close();
   return true;
 }
-
+/*!
+ * \brief Funkcja obliczajaca wspolrzedne globalne rotora
+ * 
+ *  Funkcja oblicza wspolrzedne globalne rotora
+ *  \param[out] true jesli zostana poprawnie otwarte pliki
+ *  \param[out] false jezeli wystapi jakikolwiek blad z otwarciem pliku
+ */
 bool Dron::Oblicz_i_Zapisz_WspGlbRotora(const Graniastoslup6& Rotor,int k)
 {
-  Wektor3D vec;
+  Wektor3D vec,skala,trans;
   ofstream  Strumien_plikowy_wy;
   ifstream Strumien_plikowy_wej;
   int LicznikWierzcholkow;
-  RotorDrona[k].StworzSkale(0)=8;
-  RotorDrona[k].StworzSkale(1)=8;
-  RotorDrona[k].StworzSkale(2)=2;
+  skala[0]=8;
+  skala[1]=8;
+  skala[2]=2;
+  if(k==0)
+  {
+    trans[0]=5;
+    trans[1]=4;
+    trans[2]=5;
+  }
+  if(k==1)
+  {
+    trans[0]=5;
+    trans[1]=-4;
+    trans[2]=5;
+  }
+  if(k==2)
+  {
+    trans[0]=-5;
+    trans[1]=4;
+    trans[2]=5;
+  }
+  if(k==3)
+  {
+    trans[0]=-5;
+    trans[1]=-4;
+    trans[2]=5;
+  }
+  RotorDrona[k].StworzSkale(skala);
+  RotorDrona[k].polozenie(trans);
   RotorDrona[k].NazwaplikuW(i,k+1);
   RotorDrona[k].NazwaplikuF(i,k+1);
   Strumien_plikowy_wej.open(Rotor.WezNazwePliku_BrylaWzorcowa());
@@ -153,19 +227,22 @@ bool Dron::Oblicz_i_Zapisz_WspGlbRotora(const Graniastoslup6& Rotor,int k)
     << "\"" << endl << ":(  nie powiodla sie." << endl;
     return false;
   }
+  Strumien_plikowy_wej >> vec;
   while (!Strumien_plikowy_wej.fail()) 
   {
     LicznikWierzcholkow=0;
     for(;LicznikWierzcholkow<4;++LicznikWierzcholkow)
     {
-      Strumien_plikowy_wej >> vec;
-      /*Rotor.Skaluj(vec);
-      cout <<"po skalowaniu rotora"<< vec << endl;
-      Rotor.TransfDoUklWspRodzica(vec);
-      cout <<"po rot.trans rotora"<< vec << endl;*/
+      
+      //std::cout << vec << endl;
+      vec=Rotor.Skaluj(vec);
+      //std::cout <<"po skalowaniu rotora"<< vec << endl;
+      vec=Rotor.TransfDoUklWspRodzica(vec);
+      //std::cout <<"po rot.trans rotora"<< vec << endl;
       vec=TransfDoUklWspRodzica(vec);
-      cout <<"po trans rotora"<< vec << endl;
+      //std::cout <<"po trans rotora"<< vec << endl;
       Strumien_plikowy_wy << vec << endl;
+      Strumien_plikowy_wej >> vec;
     }
     Strumien_plikowy_wy << endl;
   }
@@ -173,81 +250,174 @@ bool Dron::Oblicz_i_Zapisz_WspGlbRotora(const Graniastoslup6& Rotor,int k)
   Strumien_plikowy_wy.close();
   return true;
 }
-
+/*!
+ * \brief Funkcja wykonujaca pionowy lot
+ * 
+ *  Funkcja animuje lot w gore lub w dol drona.
+ *  \param[in] DlugoscLotu zmienna double oznaczajaca wysokosc lotu 
+ *  \param[in] Lacze referencja do PzG::LaczeDoGNUPlota
+ *  \param[out] true jesli jest poprawna wysokosc
+ *  \param[out] false jezeli nie jest poprawna wysokosc
+ */
 bool Dron::WykonajPionowyLot(double DlugoscLotu,PzG::LaczeDoGNUPlota& Lacze)
 {
+  
   if(Polozenie[2]==0)
   {
-    cout << endl << "Wznoszenie ... " << endl;
-    cout << Polozenie;
+    std::cout << endl << "Wznoszenie ... " << endl;
+    //std::cout << Polozenie;
     for (; Polozenie[2] < DlugoscLotu; Polozenie[2] += 2)
     {
-      cout << Polozenie<< endl;
-      if (!TworzDrona()) return false;
+      //std::cout << Polozenie<< endl;
+      if (!Oblicz_i_Zapisz_WspGlbDrona()) return false;
+      
+      
+      for(unsigned index=0;index<4;++index)
+      {
+        if(index%2==0)
+        {
+          RotorDrona[index].kat(10);
+        }
+        else
+        {
+          RotorDrona[index].kat(-10);
+        }
+      }
       usleep(100000); // 0.1 ms
       Lacze.Rysuj();
 
     }
-    if (!TworzDrona()) return false;
+    if (!Oblicz_i_Zapisz_WspGlbDrona()) return false;
+    for(unsigned index=0;index<4;++index)
+    {
+      if(index%2==0)
+      {
+        RotorDrona[index].kat(10);
+      }
+      else
+      {
+        RotorDrona[index].kat(-10);
+      }
+    }
     usleep(100000); // 0.1 ms
     Lacze.Rysuj();
     return true;
   }
   else if(Polozenie[2]==DlugoscLotu)
   {
-    cout << endl << "Ladowanie ... " << endl;
+    std::cout << endl << "Ladowanie ... " << endl;
     for (; Polozenie[2] > 0; Polozenie[2] -= 2)
     {
-      if (!TworzDrona()) return false;
+      if (!Oblicz_i_Zapisz_WspGlbDrona()) return false;
+      for(unsigned index=0;index<4;++index)
+      {
+        if(index%2==0)
+        {
+          RotorDrona[index].kat(10);
+        }
+        else
+        {
+          RotorDrona[index].kat(-10);
+        }
+      }
       usleep(100000); // 0.1 ms
       Lacze.Rysuj();
-      cout << Polozenie[2] <<"==?" << DlugoscLotu << endl;
+      //std::cout << Polozenie[2] <<"==?" << DlugoscLotu << endl;
     }
-    if (!TworzDrona()) return false;
+    if (!Oblicz_i_Zapisz_WspGlbDrona()) return false;
+    for(unsigned index=0;index<4;++index)
+    {
+      if(index%2==0)
+      {
+        RotorDrona[index].kat(10);
+      }
+      else
+      {
+        RotorDrona[index].kat(-10);
+      }
+    }
     usleep(100000); // 0.1 ms
     Lacze.Rysuj();
-    cout << Polozenie[2] <<"==?" << DlugoscLotu << endl;
+    //std::cout << Polozenie[2] <<"==?" << DlugoscLotu << endl;
     return true;
   }
   return false;
 }
-
+/*!
+ * \brief Funkcja wykonujaca poziomy lot
+ * 
+ *  Funkcja animuje lot poziomy drona.
+ *  \param[in] DlugoscLotu zmienna double oznaczajaca wysokosc lotu
+ *  \param[in] Przemieszczenie zmienna typu wektor3D potrzebna do animowania
+ *  \param[in] Lacze referencja do PzG::LaczeDoGNUPlota
+ *  \param[out] true jesli jest poprawna wysokosc
+ *  \param[out] false jezeli nie jest poprawna wysokosc
+ */
 bool Dron::WykonajPoziomyLot(double DlugoscLotu,Wektor3D Przemieszczenie,PzG::LaczeDoGNUPlota& Lacze)
 {
   double j=0,KatSzukany;
-  cout << Polozenie[2] <<"==?" << DlugoscLotu << endl;
-  KatSzukany=atan((Polozenie[1]/Polozenie[0]));
+  //std::cout << Polozenie[2] <<"==?" << DlugoscLotu << endl;
+  KatSzukany=atan((Przemieszczenie[1]/Przemieszczenie[0]));
   for (;KatOrientacji_stopnie<((180*KatSzukany)/(M_PI));KatOrientacji_stopnie+=(((180*KatSzukany)/(M_PI))/20))
   {
-    cout << KatSzukany << "katO"<< KatOrientacji_stopnie << endl;
-    if (!TworzDrona()) return false;
+    //std::cout << KatSzukany << "katO"<< KatOrientacji_stopnie << endl;
+    if (!Oblicz_i_Zapisz_WspGlbDrona()) return false;
     usleep(100000); // 0.1 ms
     Lacze.Rysuj();
   }
-  cout << Polozenie[2] <<"==?" << DlugoscLotu << endl;
+  //std::cout << Polozenie[2] <<"==?" << DlugoscLotu << endl;
   
   if(Polozenie[2]==DlugoscLotu)
   {
-    cout << endl << "Lot do miejsca docelowego ... " << endl;
-    for (double i=0;i<=Przemieszczenie[0];i=i+(Przemieszczenie[0]/10))
+    std::cout << endl << "Lot do miejsca docelowego ... " << endl;
+    for (double i=0;i<50;i=i+1)
     {
-      j=j+(Przemieszczenie[1]/10);
-      Polozenie[0]=Polozenie[0]+(Przemieszczenie[0]/10);
-      Polozenie[1]=Polozenie[1]+(Przemieszczenie[1]/10);
-      if (!TworzDrona()) return false;
+      j=j+1;
+      Polozenie[0]=Polozenie[0]+(Przemieszczenie[0]/50);
+      Polozenie[1]=Polozenie[1]+(Przemieszczenie[1]/50);
+      if (!Oblicz_i_Zapisz_WspGlbDrona()) return false;
+      for(unsigned index=0;index<4;++index)
+      {
+        if(index%2==0)
+        {
+          RotorDrona[index].kat(10);
+        }
+        else
+        {
+          RotorDrona[index].kat(-10);
+        }
+      }
       usleep(100000); // 0.1 ms
       Lacze.Rysuj();
       
     }
-    if (!TworzDrona()) return false;
+    if (!Oblicz_i_Zapisz_WspGlbDrona()) return false;
+    for(unsigned index=0;index<4;++index)
+    {
+      if(index%2==0)
+      {
+        RotorDrona[index].kat(10);
+      }
+      else
+      {
+        RotorDrona[index].kat(-10);
+      }
+    }
     usleep(100000); // 0.1 ms
     Lacze.Rysuj();
+    //std::cout << Polozenie << endl;
     return true;
   }
   cerr << "Nie poprawna wysokosc lotu" << endl;
   return false;
 }
-
+/*!
+ * \brief Funkcja transformujaca wspolrzedne do ukladu rodzica
+ * 
+ *  Funkcja transformuje wspolrzedne wierzcholkow do ukladu rodzica
+ *  \param[in] Wierz wektor3D ktory chcemy transformowac
+ *  \param[out] Nowy_polozenie wektor3D przetranformowany
+ */
 Wektor3D Dron::TransfDoUklWspRodzica(const Wektor3D& Wierz)const
 {
     Wektor3D Nowe_polozenie;
@@ -255,148 +425,4 @@ Wektor3D Dron::TransfDoUklWspRodzica(const Wektor3D& Wierz)const
     mtx=rotmtxz(KatOrientacji_stopnie,mtx);
     Nowe_polozenie=(Wierz*mtx)+Polozenie;
     return Nowe_polozenie;
-}
-
-
-
-
-/************************************************************************************************/
-bool Dron::TworzKorpus(Wektor3D trans)
-{
-#define  SKALA_KORPUSU  10,8,4
-  Wektor3D vec,skala;
-  Wektor3D Nowe_polozenie;
-  Macierz3x3 mtx;
-  ofstream  Strumien_plikowy_wy,Strumien_plikowy_wy2;
-  ifstream Strumien_plikowy_wej;
-  skala[0]=10;
-  skala[1]=8;
-  skala[2]=4;
-  KorpusDrona.NazwaplikuW(i,0);
-  KorpusDrona.NazwaplikuF(i,0);
-  Strumien_plikowy_wej.open("bryly_wzorcowe/szescian.dat");
-  if (!Strumien_plikowy_wej.is_open())  {
-    cerr << ":(  Operacja otwarcia do wczytania szescianu" 
-    << "" << endl << ":(  nie powiodla sie." << endl;
-    return false;
-  }
-  
-  Strumien_plikowy_wy.open(KorpusDrona.WezNazwePliku_BrylaWzorcowa());
-  if (!Strumien_plikowy_wy.is_open())  {
-    cerr << ":(  Operacja otwarcia do zapisu korpusu \"" 
-    << "\"" << endl << ":(  nie powiodla sie." << endl;
-    return false;
-  }
-  Strumien_plikowy_wy2.open(KorpusDrona.WezNazwePliku_BrylaFinalna());
-  if (!Strumien_plikowy_wy.is_open())  {
-    cerr << ":(  Operacja otwarcia do zapisu korpusu \"" 
-    << "\"" << endl << ":(  nie powiodla sie." << endl;
-    return false;
-  }
-  Strumien_plikowy_wej >> vec;
-  mtx=rotmtxz(KatOrientacji_stopnie,mtx);
-  while(!Strumien_plikowy_wej.fail()) 
-  {
-    for(unsigned int k=0;k<4;++k)
-    {
-      
-      Nowe_polozenie=((vec*mtx)*skala)+Polozenie+trans;
-      Strumien_plikowy_wy << Nowe_polozenie << endl;
-      Strumien_plikowy_wy2 << Nowe_polozenie << endl;
-      Strumien_plikowy_wej >> vec;
-    }
-    Strumien_plikowy_wy << endl;
-    Strumien_plikowy_wy2<< endl;
-  }
-  Strumien_plikowy_wej.close();
-  Strumien_plikowy_wy.close();
-  return true;
-}
-
-bool Dron::TworzRotor(int j,Wektor3D trans)
-{
-#define  SKALA_ROTORA  8,8,2  
- Wektor3D vec,skala;
-  Wektor3D Nowe_polozenie;
-  Macierz3x3 mtx;
-  ofstream  Strumien_plikowy_wy,Strumien_plikowy_wy2;
-  ifstream Strumien_plikowy_wej;
-  skala[0]=8;
-  skala[1]=8;
-  skala[2]=2;
-  RotorDrona[j].NazwaplikuW(i,j+1);
-  RotorDrona[j].NazwaplikuF(i,j+1);
-  Strumien_plikowy_wej.open("bryly_wzorcowe/graniastoslup6.dat");
-  if (!Strumien_plikowy_wej.is_open())  {
-    cerr << ":(  Operacja otwarcia do wczytania graniastoslup6" 
-    << "" << endl << ":(  nie powiodla sie." << endl;
-    return false;
-  }
-  
-  Strumien_plikowy_wy.open(RotorDrona[j].WezNazwePliku_BrylaWzorcowa());
-  if (!Strumien_plikowy_wy.is_open())  {
-    cerr << ":(  Operacja otwarcia do zapisu rotora \"" 
-    << "\"" << endl << ":(  nie powiodla sie." << endl;
-    return false;
-  }
-  Strumien_plikowy_wy2.open(RotorDrona[j].WezNazwePliku_BrylaFinalna());
-  if (!Strumien_plikowy_wy.is_open())  {
-    cerr << ":(  Operacja otwarcia do zapisu korpusu \"" 
-    << "\"" << endl << ":(  nie powiodla sie." << endl;
-    return false;
-  }
-  Strumien_plikowy_wej >> vec;
-  mtx=rotmtxz(KatOrientacji_stopnie,mtx);
-  while(!Strumien_plikowy_wej.fail()) 
-  {
-    for(unsigned int k=0;k<4;++k)
-    {
-      
-      Nowe_polozenie=((vec*mtx)*skala)+Polozenie+trans;
-      Strumien_plikowy_wy << Nowe_polozenie << endl;
-      Strumien_plikowy_wy2 << Nowe_polozenie << endl;
-      Strumien_plikowy_wej >> vec;
-    }
-    Strumien_plikowy_wy << endl;
-    Strumien_plikowy_wy2<< endl;
-  }
-  Strumien_plikowy_wej.close();
-  Strumien_plikowy_wy.close();
-  return true;
-}
-bool Dron::TworzDrona()
-{
-  Wektor3D transKor,transR1,transR2,transR3,transR4;
-  
-  transKor[2]=2;
-  transR1[0]=5;
-  transR1[1]=4;
-  transR1[2]=5;
-  transR2[0]=5;
-  transR2[1]=-4;
-  transR2[2]=5;
-  transR3[0]=-5;
-  transR3[1]=4;
-  transR3[2]=5;
-  transR4[0]=-5;
-  transR4[1]=-4;
-  transR4[2]=5;
-  for(unsigned index=0;index<4;++index)
-  {
-    if(i%2==0)
-    {
-      RotorDrona[index].kat(10);
-    }
-    else
-    {
-      RotorDrona[index].kat(-10);
-    }
-  }
-  if (!TworzKorpus(transKor)) return false;
-
-  if (!TworzRotor(0,transR1)) return false;
-  if (!TworzRotor(1,transR2)) return false;
-  if (!TworzRotor(2,transR3)) return false;
-  if (!TworzRotor(3,transR4)) return false;
-  return true;
 }

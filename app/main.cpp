@@ -14,6 +14,11 @@
 #define PLIK_WLASCIWY__DRON1_ROTOR2  "dat/PlikWlasciwy_Dron1_Rotor2.dat"
 #define PLIK_WLASCIWY__DRON1_ROTOR3  "dat/PlikWlasciwy_Dron1_Rotor3.dat"
 #define PLIK_WLASCIWY__DRON1_ROTOR4  "dat/PlikWlasciwy_Dron1_Rotor4.dat"
+#define PLIK_WLASCIWY__DRON2_KORPUS  "dat/PlikWlasciwy_Dron2_Korpus.dat"
+#define PLIK_WLASCIWY__DRON2_ROTOR1  "dat/PlikWlasciwy_Dron2_Rotor1.dat"
+#define PLIK_WLASCIWY__DRON2_ROTOR2  "dat/PlikWlasciwy_Dron2_Rotor2.dat"
+#define PLIK_WLASCIWY__DRON2_ROTOR3  "dat/PlikWlasciwy_Dron2_Rotor3.dat"
+#define PLIK_WLASCIWY__DRON2_ROTOR4  "dat/PlikWlasciwy_Dron2_Rotor4.dat"
 using namespace std;
 
 int main()
@@ -28,6 +33,11 @@ int main()
   Lacze.DodajNazwePliku(PLIK_WLASCIWY__DRON1_ROTOR2);
   Lacze.DodajNazwePliku(PLIK_WLASCIWY__DRON1_ROTOR3);
   Lacze.DodajNazwePliku(PLIK_WLASCIWY__DRON1_ROTOR4);
+  Lacze.DodajNazwePliku(PLIK_WLASCIWY__DRON2_KORPUS);
+  Lacze.DodajNazwePliku(PLIK_WLASCIWY__DRON2_ROTOR1);
+  Lacze.DodajNazwePliku(PLIK_WLASCIWY__DRON2_ROTOR2);
+  Lacze.DodajNazwePliku(PLIK_WLASCIWY__DRON2_ROTOR3);
+  Lacze.DodajNazwePliku(PLIK_WLASCIWY__DRON2_ROTOR4);
 
   Lacze.ZmienTrybRys(PzG::TR_3D);
   Lacze.Inicjalizuj();  // Tutaj startuje gnuplot.
@@ -64,7 +74,8 @@ int main()
   
   cout << "Nacisnij ENTER, aby zakonczyc ... " << flush;
   cin.ignore(10000,'\n');*/
-       
+       Scena.UstawLacze(Lacze);
+       Scena.Poczatek();
        while(wybor[0]!='E')/*Warunek zakonczenia programu*/
        {
               
@@ -77,12 +88,10 @@ int main()
               switch(wybor[0])
               {
                      case 'A':i=0;
-                     Scena.UstawLacze(Lacze);
                      Scena.WezAktywnegoDrona(i);
                      Scena.UzyjAktynegoDrona(i);
                      break;
                      case 'B':i=1;
-                     Scena.UstawLacze(Lacze);
                      Scena.WezAktywnegoDrona(i);
                      Scena.UzyjAktynegoDrona(i);
                      break;

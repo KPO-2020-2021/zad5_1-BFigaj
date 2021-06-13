@@ -7,12 +7,11 @@
 
 /*!
  *  \file 
- *  \brief Ten plik zawiera diefinicje klasy Prostopadłościan
+ *  \brief Ten plik zawiera diefinicje klasy Graniastoslup6
  *   
- *  Klasa składa się z 8 punktów które są traktowane jako zmienne
- *  Wektor3D dzieki czemu łatwo można tymi punktami manipulować
- *  dodatkowo przetrzymywana jest Macierz3x3 do operacji takich jak
- *  rotacja
+ *  Klasa dziedziczy klase BrylaGeometryczna. Jako dane prywatne
+ *  mamy polozenie w formie wektora3D oraz konta orientacji w formie
+ *  double.
  */
 class Graniastoslup6:public BrylaGeometryczna{
   Wektor3D Polozenie;
@@ -21,7 +20,7 @@ class Graniastoslup6:public BrylaGeometryczna{
   public:
   //Graniastoslup6(unsigned int ktory,Wektor3D polozenieD);
   Wektor3D TransfDoUklWspRodzica(const Wektor3D& Wierz)const;
-  Wektor3D& polozenie(int index,const Wektor3D polozenieD);
+  Wektor3D& polozenie(const Wektor3D polozenieD);
   double& kat(double kat);
   double kat()const;
 };

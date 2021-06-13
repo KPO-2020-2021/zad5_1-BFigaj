@@ -19,7 +19,7 @@ class Scena {
     Dron& WezAktywnegoDrona(int i);
     bool UzyjAktynegoDrona(int i);
     void UstawLacze(PzG::LaczeDoGNUPlota& Lacze);
-
+    void Poczatek();
 
 };
 
