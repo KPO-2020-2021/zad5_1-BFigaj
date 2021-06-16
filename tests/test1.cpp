@@ -1,237 +1,51 @@
 
 #include "doctest.h"
 #include "Prostopadloscian.hh"
+#include "Graniastoslup6.hh" 
 #define PRECISION 0.0000000001
-/*
-TEST_CASE("Konstruktor bezparametryczny"){
+
+TEST_CASE("Transfuzja do układu wsp. rodzica prostopadloscianu i graniastoslupa"){
     Prostopadloscian Pr;
-    double x,y,z;
-    x=y=z=0;
-    CHECK(Pr[0][0] == x);
-    CHECK(Pr[0][1] == y);
-    CHECK(Pr[0][2] == z);
-    
-    CHECK(Pr[1][0] == x+X_bok);
-    CHECK(Pr[1][1] == y);
-    CHECK(Pr[1][2] == z);
-    
-    CHECK(Pr[2][0] == x+X_bok);
-    CHECK(Pr[2][1] == y+Y_bok);
-    CHECK(Pr[2][2] == z);
-    
-    CHECK(Pr[3][0] == x);
-    CHECK(Pr[3][1] == y+Y_bok);
-    CHECK(Pr[3][2] == z);
-    
-    CHECK(Pr[4][0] == x);
-    CHECK(Pr[4][1] == y);
-    CHECK(Pr[4][2] == z+Z_bok);
-    
-    CHECK(Pr[5][0] == x+X_bok);
-    CHECK(Pr[5][1] == y);
-    CHECK(Pr[5][2] == z+Z_bok);
-    
-    CHECK(Pr[6][0] == x+X_bok);
-    CHECK(Pr[6][1] == y+Y_bok);
-    CHECK(Pr[6][2] == z+Z_bok);
-    
-    CHECK(Pr[7][0] == x);
-    CHECK(Pr[7][1] == y+Y_bok);
-    CHECK(Pr[7][2] == z+Z_bok);
-    
-    
+    Graniastoslup6 Gr;
+    Macierz3x3 mtx;
+    Wektor3D vec,vec2,wierz,wierz2;
+    vec[0]=0;
+    vec[1]=0;
+    vec[2]=2;//jezeli prostopadloscian jest przesuniety o wektor 0 0 2
+    Pr.polozenie(vec);
+    vec2[0]=2;
+    vec2[1]=2;
+    vec2[2]=8;
+    Gr.polozenie(vec2);
+    wierz[0]=4;
+    wierz[1]=4;
+    wierz[2]=4;
+    wierz=Pr.TransfDoUklWspRodzica(wierz);
+    //macierz w srodku bo kat 0
+    /*
+    | 1 0 0 |
+    | 0 1 0 |
+    | 0 0 1 |
+    */
+    //powinno wyjsc [4,4,6] bo [4,4,6]= [4,4,4]*I+[0,0,2]
+    wierz2[0]=3;
+    wierz2[1]=3;
+    wierz2[2]=5;
+    wierz2=Gr.TransfDoUklWspRodzica(wierz2);
+    //macierz w srodku bo kat 0
+    /*
+    | 1 0 0 |
+    | 0 1 0 |
+    | 0 0 1 |
+    */
+    //powinno wyjsc [5,5,13] bo [5,5,13]= [3,3,5]*I+[2,2,8]
+
+    CHECK(wierz[0] == 4);
+    CHECK(wierz[1] == 4);
+    CHECK(wierz[2] == 6);
+
+    CHECK(wierz2[0] == 5);
+    CHECK(wierz2[1] == 5);
+    CHECK(wierz2[2] == 13);
 
 }
-
-TEST_CASE("Konstruktor parametryczny"){
-    double x=5,y=10,z=5;
-    Prostopadloscian Pr(x,y,z);
-    CHECK(Pr[0][0] == x);
-    CHECK(Pr[0][1] == y);
-    CHECK(Pr[0][2] == z);
-    
-    CHECK(Pr[1][0] == x+X_bok);
-    CHECK(Pr[1][1] == y);
-    CHECK(Pr[1][2] == z);
-    
-    CHECK(Pr[2][0] == x+X_bok);
-    CHECK(Pr[2][1] == y+Y_bok);
-    CHECK(Pr[2][2] == z);
-    
-    CHECK(Pr[3][0] == x);
-    CHECK(Pr[3][1] == y+Y_bok);
-    CHECK(Pr[3][2] == z);
-    
-    CHECK(Pr[4][0] == x);
-    CHECK(Pr[4][1] == y);
-    CHECK(Pr[4][2] == z+Z_bok);
-    
-    CHECK(Pr[5][0] == x+X_bok);
-    CHECK(Pr[5][1] == y);
-    CHECK(Pr[5][2] == z+Z_bok);
-    
-    CHECK(Pr[6][0] == x+X_bok);
-    CHECK(Pr[6][1] == y+Y_bok);
-    CHECK(Pr[6][2] == z+Z_bok);
-    
-    CHECK(Pr[7][0] == x);
-    CHECK(Pr[7][1] == y+Y_bok);
-    CHECK(Pr[7][2] == z+Z_bok);
-}
-
-
-TEST_CASE("Translacja wektora"){
-    Prostopadloscian Pr;
-    double x,y,z,a=2;
-    Wektor3D vec(a);
-    Pr.przesunieciewektor(vec);
-    x=y=z=0;
-    CHECK(Pr[0][0]-(x+a)<PRECISION);
-    CHECK(Pr[0][1]-(y+a)<PRECISION);
-    CHECK(Pr[0][2]-(z+a)<PRECISION);
-    
-    CHECK(Pr[1][0]-(x+X_bok+a)<PRECISION);
-    CHECK(Pr[1][1]-(y+a)<PRECISION);
-    CHECK(Pr[1][2]-(z+a)<PRECISION);
-    
-    CHECK(Pr[2][0]-(x+X_bok+a)<PRECISION);
-    CHECK(Pr[2][1]-(y+Y_bok+a)<PRECISION);
-    CHECK(Pr[2][2]-(z+a)<PRECISION);
-    
-    CHECK(Pr[3][0]-(x+a)<PRECISION);
-    CHECK(Pr[3][1]-(y+Y_bok+a)<PRECISION);
-    CHECK(Pr[3][2]-(z+a)<PRECISION);
-    
-    CHECK(Pr[4][0]-(x+a)<PRECISION);
-    CHECK(Pr[4][1]-(y+a)<PRECISION);
-    CHECK(Pr[4][2]-(z+Z_bok+a)<PRECISION);
-    
-    CHECK(Pr[5][0]-(x+X_bok+a)<PRECISION);
-    CHECK(Pr[5][1]-(y+a)<PRECISION);
-    CHECK(Pr[5][2]-(z+Z_bok+a)<PRECISION);
-    
-    CHECK(Pr[6][0]-(x+X_bok+a)<PRECISION);
-    CHECK(Pr[6][1]-(y+Y_bok+a)<PRECISION);
-    CHECK(Pr[6][2]-(z+Z_bok+a)<PRECISION);
-    
-    CHECK(Pr[7][0]-(x+a)<PRECISION);
-    CHECK(Pr[7][1] -(y+Y_bok+a)<PRECISION);
-    CHECK(Pr[7][2] -(z+Z_bok+a)<PRECISION);
-}
-
-TEST_CASE("Rotacja ox"){
-    Prostopadloscian Pr;
-    Pr.rotacja(360,1);
-    double x,y,z,a=0;
-    x=y=z=0;
-    CHECK(Pr[0][0]-(x+a)<PRECISION);
-    CHECK(Pr[0][1]-(y+a)<PRECISION);
-    CHECK(Pr[0][2]-(z+a)<PRECISION);
-    
-    CHECK(Pr[1][0]-(x+X_bok+a)<PRECISION);
-    CHECK(Pr[1][1]-(y+a)<PRECISION);
-    CHECK(Pr[1][2]-(z+a)<PRECISION);
-    
-    CHECK(Pr[2][0]-(x+X_bok+a)<PRECISION);
-    CHECK(Pr[2][1]-(y+Y_bok+a)<PRECISION);
-    CHECK(Pr[2][2]-(z+a)<PRECISION);
-    
-    CHECK(Pr[3][0]-(x+a)<PRECISION);
-    CHECK(Pr[3][1]-(y+Y_bok+a)<PRECISION);
-    CHECK(Pr[3][2]-(z+a)<PRECISION);
-    
-    CHECK(Pr[4][0]-(x+a)<PRECISION);
-    CHECK(Pr[4][1]-(y+a)<PRECISION);
-    CHECK(Pr[4][2]-(z+Z_bok+a)<PRECISION);
-    
-    CHECK(Pr[5][0]-(x+X_bok+a)<PRECISION);
-    CHECK(Pr[5][1]-(y+a)<PRECISION);
-    CHECK(Pr[5][2]-(z+Z_bok+a)<PRECISION);
-    
-    CHECK(Pr[6][0]-(x+X_bok+a)<PRECISION);
-    CHECK(Pr[6][1]-(y+Y_bok+a)<PRECISION);
-    CHECK(Pr[6][2]-(z+Z_bok+a)<PRECISION);
-    
-    CHECK(Pr[7][0]-(x+a)<PRECISION);
-    CHECK(Pr[7][1] -(y+Y_bok+a)<PRECISION);
-    CHECK(Pr[7][2] -(z+Z_bok+a)<PRECISION);
-
-}
-
-TEST_CASE("Rotacja oy"){
-    Prostopadloscian Pr;
-    Pr.rotacja(360,2);
-    double x,y,z,a=0;
-    x=y=z=0;
-    CHECK(Pr[0][0]-(x+a)<PRECISION);
-    CHECK(Pr[0][1]-(y+a)<PRECISION);
-    CHECK(Pr[0][2]-(z+a)<PRECISION);
-    
-    CHECK(Pr[1][0]-(x+X_bok+a)<PRECISION);
-    CHECK(Pr[1][1]-(y+a)<PRECISION);
-    CHECK(Pr[1][2]-(z+a)<PRECISION);
-    
-    CHECK(Pr[2][0]-(x+X_bok+a)<PRECISION);
-    CHECK(Pr[2][1]-(y+Y_bok+a)<PRECISION);
-    CHECK(Pr[2][2]-(z+a)<PRECISION);
-    
-    CHECK(Pr[3][0]-(x+a)<PRECISION);
-    CHECK(Pr[3][1]-(y+Y_bok+a)<PRECISION);
-    CHECK(Pr[3][2]-(z+a)<PRECISION);
-    
-    CHECK(Pr[4][0]-(x+a)<PRECISION);
-    CHECK(Pr[4][1]-(y+a)<PRECISION);
-    CHECK(Pr[4][2]-(z+Z_bok+a)<PRECISION);
-    
-    CHECK(Pr[5][0]-(x+X_bok+a)<PRECISION);
-    CHECK(Pr[5][1]-(y+a)<PRECISION);
-    CHECK(Pr[5][2]-(z+Z_bok+a)<PRECISION);
-    
-    CHECK(Pr[6][0]-(x+X_bok+a)<PRECISION);
-    CHECK(Pr[6][1]-(y+Y_bok+a)<PRECISION);
-    CHECK(Pr[6][2]-(z+Z_bok+a)<PRECISION);
-    
-    CHECK(Pr[7][0]-(x+a)<PRECISION);
-    CHECK(Pr[7][1] -(y+Y_bok+a)<PRECISION);
-    CHECK(Pr[7][2] -(z+Z_bok+a)<PRECISION);
-
-}
-TEST_CASE("Rotacja oz"){
-    Prostopadloscian Pr;
-    Pr.rotacja(360,3);
-    double x,y,z,a=0;
-    x=y=z=0;
-    CHECK(Pr[0][0]-(x+a)<PRECISION);
-    CHECK(Pr[0][1]-(y+a)<PRECISION);
-    CHECK(Pr[0][2]-(z+a)<PRECISION);
-    
-    CHECK(Pr[1][0]-(x+X_bok+a)<PRECISION);
-    CHECK(Pr[1][1]-(y+a)<PRECISION);
-    CHECK(Pr[1][2]-(z+a)<PRECISION);
-    
-    CHECK(Pr[2][0]-(x+X_bok+a)<PRECISION);
-    CHECK(Pr[2][1]-(y+Y_bok+a)<PRECISION);
-    CHECK(Pr[2][2]-(z+a)<PRECISION);
-    
-    CHECK(Pr[3][0]-(x+a)<PRECISION);
-    CHECK(Pr[3][1]-(y+Y_bok+a)<PRECISION);
-    CHECK(Pr[3][2]-(z+a)<PRECISION);
-    
-    CHECK(Pr[4][0]-(x+a)<PRECISION);
-    CHECK(Pr[4][1]-(y+a)<PRECISION);
-    CHECK(Pr[4][2]-(z+Z_bok+a)<PRECISION);
-    
-    CHECK(Pr[5][0]-(x+X_bok+a)<PRECISION);
-    CHECK(Pr[5][1]-(y+a)<PRECISION);
-    CHECK(Pr[5][2]-(z+Z_bok+a)<PRECISION);
-    
-    CHECK(Pr[6][0]-(x+X_bok+a)<PRECISION);
-    CHECK(Pr[6][1]-(y+Y_bok+a)<PRECISION);
-    CHECK(Pr[6][2]-(z+Z_bok+a)<PRECISION);
-    
-    CHECK(Pr[7][0]-(x+a)<PRECISION);
-    CHECK(Pr[7][1] -(y+Y_bok+a)<PRECISION);
-    CHECK(Pr[7][2] -(z+Z_bok+a)<PRECISION);
-
-}*/
-
